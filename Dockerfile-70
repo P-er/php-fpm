@@ -65,10 +65,13 @@ RUN apt-get update \
         libssl-dev \
         openssl
 
-# Install Composer
-RUN curl -sS https://getcomposer.org/installer | php -- \
-        --install-dir=/usr/local/bin \
-        --filename=composer
+# Install PHP extensions
+RUN docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ \
+    && echo 'instantclient,/opt/oracle/instantclient_12_1/' | pecl install oci8 \
+    && docker-php-ext-configure pdo_oci --with-pdo-oci=instantclient,/opt/oracle/instantclient_12_1,12.1 \
+    && docker-php-ext-configure pdo_dblib --with-libdir=/lib/x86_64-linux-gnu \
+    && pecl install sqlsrv-4.1.6.1 \
+    && pecl install pdo_sqlsrv-4.1.6.1 \
 
 # Install the PHP mcrypt extention
 RUN docker-php-ext-install mcrypt
