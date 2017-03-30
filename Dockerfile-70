@@ -36,14 +36,15 @@ RUN apt-get update && \
 # Install Oracle Instantclient
 RUN mkdir /opt/oracle \
     && cd /opt/oracle \
-    && wget https://s3.amazonaws.com/merofile/instantclient-basic-linux.x64-12.1.0.2.0.zip \
-    && wget https://s3.amazonaws.com/merofile/instantclient-sdk-linux.x64-12.1.0.2.0.zip \
+    && wget -q https://s3.amazonaws.com/merofile/instantclient-basic-linux.x64-12.1.0.2.0.zip \
+    && wget -q https://s3.amazonaws.com/merofile/instantclient-sdk-linux.x64-12.1.0.2.0.zip \
     && unzip /opt/oracle/instantclient-basic-linux.x64-12.1.0.2.0.zip -d /opt/oracle \
     && unzip /opt/oracle/instantclient-sdk-linux.x64-12.1.0.2.0.zip -d /opt/oracle \
     && ln -s /opt/oracle/instantclient_12_1/libclntsh.so.12.1 /opt/oracle/instantclient_12_1/libclntsh.so \
     && ln -s /opt/oracle/instantclient_12_1/libclntshcore.so.12.1 /opt/oracle/instantclient_12_1/libclntshcore.so \
     && ln -s /opt/oracle/instantclient_12_1/libocci.so.12.1 /opt/oracle/instantclient_12_1/libocci.so \
     && rm -rf /opt/oracle/*.zip
+
 
 
 # Install PHP extensions deps
@@ -63,7 +64,16 @@ RUN apt-get update \
         libmemcached-dev \
         freetds-dev \
         libssl-dev \
-        openssl
+        openssl \
+        apt-transport-https
+RUN echo 'deb [arch=amd64] http://ftp.debian.org/debian sid main' > /etc/apt/sources.list.d/debian-sid-main.list
+RUN apt-get update && apt-get -t sid -y install libc6 libstdc++6
+RUN rm /etc/apt/sources.list.d/debian-sid-main.list
+RUN curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add -
+RUN curl https://packages.microsoft.com/config/ubuntu/16.04/prod.list > /etc/apt/sources.list.d/mssql-release.list
+RUN apt-get update && ACCEPT_EULA=Y apt-get install -y msodbcsql mssql-tools
+RUN apt-get update && ACCEPT_EULA=Y apt-get install -y unixodbc-utf16  unixodbc-dev-utf16
+
 
 # Install PHP extensions
 RUN docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ \
