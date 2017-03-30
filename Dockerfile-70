@@ -70,8 +70,8 @@ RUN docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-di
     && echo 'instantclient,/opt/oracle/instantclient_12_1/' | pecl install oci8 \
     && docker-php-ext-configure pdo_oci --with-pdo-oci=instantclient,/opt/oracle/instantclient_12_1,12.1 \
     && docker-php-ext-configure pdo_dblib --with-libdir=/lib/x86_64-linux-gnu \
-    && pecl install sqlsrv-4.1.6.1 \
-    && pecl install pdo_sqlsrv-4.1.6.1 \
+    && pecl install sqlsrv \
+    && pecl install pdo_sqlsrv \
 
 # Install the PHP mcrypt extention
 RUN docker-php-ext-install mcrypt
